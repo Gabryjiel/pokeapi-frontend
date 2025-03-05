@@ -10,9 +10,9 @@
 </template>
 
 <script setup lang="ts">
-import type { RouteNamedMap } from 'vue-router/auto-routes';
+import type { RouteLocationRaw } from 'vue-router';
 
-const props = defineProps<{ href: keyof RouteNamedMap; text: string, isVisible: boolean }>();
+const props = defineProps<{ href: RouteLocationRaw; text: string, isVisible: boolean }>();
 </script>
 
 <style scoped>

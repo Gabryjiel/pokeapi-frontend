@@ -1,7 +1,7 @@
 <script lang="ts" setup>
-import type { RouteNamedMap } from 'vue-router/auto-routes';
+import type { RouteLocationRaw } from 'vue-router';
 
-const props = defineProps<{ content: string, href: keyof RouteNamedMap }>()
+const props = defineProps<{ content: string, href: RouteLocationRaw }>()
 </script>
 
 <template>

@@ -1,10 +1,11 @@
 import { capitalize } from 'vue';
 import { ApiClient } from './apiClient';
 import { getPokemonDisplayName } from './stringHelpers';
-import type { NamedAPIResource } from 'pokenode-ts';
+import type { NamedAPIResource, NamedAPIResourceList } from 'pokenode-ts';
 
+export type SuggestionType = 'POKEMON' | 'ABILITY';
 export type Suggestion = {
-  type: 'POKEMON' | 'ABILITY';
+  type: SuggestionType;
   id: number;
   name: string;
   slug: string;
@@ -12,7 +13,7 @@ export type Suggestion = {
 
 function createSugestion(
   resource: NamedAPIResource,
-  type: Suggestion['type'],
+  type: SuggestionType,
   nameFormatFn?: (name: string) => string,
 ): Suggestion {
   return {
@@ -23,16 +24,32 @@ function createSugestion(
   };
 }
 
+function filterName(searchPhrase: string, resource: NamedAPIResource): boolean {
+  return resource.name.includes(searchPhrase.toLowerCase());
+}
+
+function reduceResource(
+  resources: NamedAPIResourceList,
+  searchPhrase: string,
+  type: SuggestionType,
+  nameFormatFn?: (name: string) => string,
+): Suggestion[] {
+  return resources.results.reduce((acc, cur) => {
+    if (!filterName(searchPhrase, cur)) {
+      return acc;
+    }
+
+    acc.push(createSugestion(cur, type, nameFormatFn));
+    return acc;
+  }, new Array<Suggestion>());
+}
+
 export async function searchPokemons(searchPhrase: string): Promise<Suggestion[]> {
-  const pokemonList = await ApiClient.pokemon.listPokemons(0, -1);
-  return pokemonList.results
-    .filter((resource) => resource.name.includes(searchPhrase.toLowerCase()))
-    .map((resource) => createSugestion(resource, 'POKEMON', getPokemonDisplayName));
+  const list = await ApiClient.pokemon.listPokemons(0, -1);
+  return reduceResource(list, searchPhrase, 'POKEMON', getPokemonDisplayName);
 }
 
 export async function searchAbilities(searchPhrase: string): Promise<Suggestion[]> {
-  const abilityList = await ApiClient.pokemon.listAbilities(0, -1);
-  return abilityList.results
-    .filter((resource) => resource.name.includes(searchPhrase.toLowerCase()))
-    .map((resource) => createSugestion(resource, 'ABILITY'));
+  const list = await ApiClient.pokemon.listAbilities(0, -1);
+  return reduceResource(list, searchPhrase, 'ABILITY');
 }

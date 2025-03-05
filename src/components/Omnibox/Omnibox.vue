@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed, reactive, ref, watch } from 'vue';
+import { computed, provide, reactive, ref, watch } from 'vue';
 import OmniboxSuggestionGroup from './OmniboxSuggestionGroup.vue';
 import OmniboxSuggestion from './OmniboxSuggestion.vue';
 import { searchAbilities, searchPokemons, type Suggestion } from '@/lib/listHelpers';
+import OmniboxPokemonSuggestion from './OmniboxPokemonSuggestion.vue';
 
 type SuggestionMap = {
   pokemons: Suggestion[];
@@ -11,6 +12,7 @@ type SuggestionMap = {
 
 const isOmniboxFocused = ref(false);
 const omniboxContent = ref('');
+const omniboxRowHover = ref(-1);
 const suggestionGroups: SuggestionMap = reactive({
   pokemons: [],
   abilities: [],
@@ -38,6 +40,7 @@ watch(omniboxContent, async (content) => {
   suggestionGroups.abilities = await searchAbilities(content)
 });
 
+provide('row-position', omniboxRowHover.value)
 </script>
 
 <template>
@@ -46,8 +49,8 @@ watch(omniboxContent, async (content) => {
       @focus="isOmniboxFocused = true" @blur="isOmniboxFocused = false" />
     <ul id="suggestions" v-if="suggestionCount > 0">
       <OmniboxSuggestionGroup href="/pokemons" text="Pokemons" :isVisible="suggestionGroups.pokemons.length > 0">
-        <OmniboxSuggestion v-for="suggestion in suggestionGroups.pokemons" :key="suggestion.slug"
-          :content="suggestion.name" :href="`/pokemons/${suggestion.id}`" />
+        <OmniboxPokemonSuggestion v-for="suggestion in suggestionGroups.pokemons" :key="suggestion.slug"
+          :content="suggestion.name" :href="`/pokemons/${suggestion.id}`" :pokemonId="suggestion.id" />
       </OmniboxSuggestionGroup>
 
       <OmniboxSuggestionGroup href="/abilities" text="Abilities" :isVisible="suggestionGroups.abilities.length > 0">
