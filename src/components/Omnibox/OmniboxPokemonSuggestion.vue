@@ -4,7 +4,8 @@
       <div>{{ split[0] }}<strong>{{ split[1] }}</strong>{{ split[2] }}</div>
       <div class="pokemon-types">
         <span v-if="pokemon === null">Loading...</span>
-        <PokemonType v-for="type in pokemon?.types" :type="type.type.name" :key="type.type.name" />
+        <PokemonType v-for="type in pokemon?.types" :type="type.type.name" :typeNo="getIdFromUrl(type.type.url)"
+          :key="type.type.name" />
       </div>
     </li>
   </router-link>
@@ -17,6 +18,7 @@ import { computed, inject, onMounted, ref, type Ref } from 'vue';
 import type { RouteLocationRaw } from 'vue-router';
 import PokemonType from '../PokemonType.vue';
 import { splitSuggestionByPhrase } from '@/lib/listHelpers';
+import { getIdFromUrl } from '@/lib/stringHelpers';
 
 const props = defineProps<{ pokemonId: number, content: string, href: RouteLocationRaw }>()
 const pokemon = ref<Pokemon | null>(null);
@@ -53,5 +55,6 @@ li {
 .pokemon-types {
   display: flex;
   gap: 5px;
+  padding-right: 5px;
 }
 </style>

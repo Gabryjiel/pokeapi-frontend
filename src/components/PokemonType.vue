@@ -1,30 +1,32 @@
 <template>
-  <div :class="{
-    fire: props.type === 'fire',
-    fighting: props.type === 'fighting',
-    water: props.type === 'water',
-    electric: props.type === 'electric',
-    grass: props.type === 'grass',
-    ice: props.type === 'ice',
-    poison: props.type === 'poison',
-    ground: props.type === 'ground',
-    flying: props.type === 'flying',
-    psychic: props.type === 'psychic',
-    bug: props.type === 'bug',
-    rock: props.type === 'rock',
-    ghost: props.type === 'ghost',
-    dragon: props.type === 'dragon',
-    dark: props.type === 'dark',
-    steel: props.type === 'steel',
-    fairy: props.type === 'fairy',
-    normal: props.type === 'normal',
-  }">
-    <span>{{ props.type }}</span>
-  </div>
+  <router-link :to="`/types/${props.typeNo}`">
+    <div :class="{
+      fire: props.type === 'fire',
+      fighting: props.type === 'fighting',
+      water: props.type === 'water',
+      electric: props.type === 'electric',
+      grass: props.type === 'grass',
+      ice: props.type === 'ice',
+      poison: props.type === 'poison',
+      ground: props.type === 'ground',
+      flying: props.type === 'flying',
+      psychic: props.type === 'psychic',
+      bug: props.type === 'bug',
+      rock: props.type === 'rock',
+      ghost: props.type === 'ghost',
+      dragon: props.type === 'dragon',
+      dark: props.type === 'dark',
+      steel: props.type === 'steel',
+      fairy: props.type === 'fairy',
+      normal: props.type === 'normal',
+    }">
+      <span>{{ props.type }}</span>
+    </div>
+  </router-link>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ type: string }>()
+const props = defineProps<{ type: string, typeNo: number }>()
 </script>
 
 <style scoped>
