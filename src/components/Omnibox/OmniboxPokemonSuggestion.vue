@@ -40,12 +40,11 @@ a {
 
 li {
   text-align: left;
-  font-size: large;
-  padding: 2px 0 2px 5px;
+  font-size: medium;
+  padding: 5px 0 0px 5px;
   color: black;
   display: flex;
   justify-content: space-between;
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
 
   &:hover {
     background-color: lightblue;

@@ -25,18 +25,19 @@ const props = defineProps<{ href: RouteLocationRaw; text: string, isVisible: boo
 }
 
 .suggestion-group-header {
-  text-align: right;
+  text-align: left;
   font-weight: lighter;
-  font-size: smaller;
+  font-size: small;
   border-bottom: 1px solid darkgray;
   padding: 0 5px;
 
   a {
-    color: black;
+    color: darkslateblue;
     text-decoration: none;
+    font-weight: bold;
 
     &:hover {
-      color: gray;
+      color: slateblue;
     }
   }
 }
