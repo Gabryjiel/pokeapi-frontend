@@ -5,7 +5,6 @@ import Omnibox from '@/components/Omnibox/Omnibox.vue';
 
 <template>
   <div id="omnibox-container">
-    <Omnibox />
   </div>
 </template>
 
