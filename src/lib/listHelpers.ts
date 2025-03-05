@@ -28,8 +28,9 @@ function filterName(searchPhrase: string, resource: NamedAPIResource): boolean {
   return resource.name.includes(searchPhrase.toLowerCase());
 }
 
-function sortResources(phrase: string) {
+function sortResources(searchPhrase: string) {
   return function (a: NamedAPIResource, b: NamedAPIResource): 1 | 0 | -1 {
+    const phrase = searchPhrase.toLowerCase();
     const aLower = -1;
     const bLower = 1;
 
@@ -51,6 +52,20 @@ function sortResources(phrase: string) {
 
     return a.name < b.name ? aLower : a.name === b.name ? 0 : bLower;
   };
+}
+
+export function splitSuggestionByPhrase(content: string, phrase: string) {
+  const index = content.toLowerCase().indexOf(phrase.toLowerCase());
+
+  if (index === -1) {
+    return [content, '', ''] as const;
+  }
+
+  return [
+    content.slice(0, index),
+    content.slice(index, index + phrase.length),
+    content.slice(index + phrase.length),
+  ] as const;
 }
 
 function reduceResource(

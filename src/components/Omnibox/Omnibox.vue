@@ -12,7 +12,6 @@ type SuggestionMap = {
 
 const isOmniboxFocused = ref(false);
 const omniboxContent = ref('');
-const omniboxRowHover = ref(-1);
 const suggestionGroups: SuggestionMap = reactive({
   pokemons: [],
   abilities: [],
@@ -40,7 +39,7 @@ watch(omniboxContent, async (content) => {
   suggestionGroups.abilities = await searchAbilities(content)
 });
 
-provide('row-position', omniboxRowHover.value)
+provide('omnibox-content', omniboxContent)
 </script>
 
 <template>
