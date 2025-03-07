@@ -30,6 +30,10 @@ const props = defineProps<{ type: string, typeNo: number }>()
 </script>
 
 <style scoped>
+a {
+  text-decoration: none;
+}
+
 div {
   width: 66px;
   height: 20px;
