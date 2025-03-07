@@ -1,100 +1,60 @@
 <template>
   <main>
-    <div class="table">
-      <div class="table-header table-row">
-        <div class="cell sortable">Id</div>
-        <div>Sprite</div>
-        <div class="cell sortable">Name</div>
-        <div>Types</div>
-        <div class="cell sortable">Total stats</div>
-        <div class="cell sortable">Health</div>
-        <div class="cell sortable">Attack</div>
-        <div class="cell sortable">Defence</div>
-        <div class="cell sortable">Sp. Attack</div>
-        <div class="cell sortable">Sp. Defence</div>
-        <div class="cell sortable">Speed</div>
-      </div>
-
-      <div class="table-body">
-        <div class="table-row" v-for="pokemon in mappedPokemons" :key="pokemon.name">
-          <div>{{ pokemon.id }}</div>
-          <div><img :src="pokemon.sprites.front_default ?? ''" :alt="`${pokemon.name} default sprite`" /></div>
-          <div>{{ pokemon.name }}</div>
-          <div class="types-cell">
-            <PokemonType v-for="type in pokemon.types" :type="type.type.name" :type-no="getIdFromUrl(type.type.url)"
-              :key="type.type.name" />
-          </div>
-          <div>{{ pokemon.totalStats }}</div>
-          <div>{{ pokemon.hp }}</div>
-          <div>{{ pokemon.attack }}</div>
-          <div>{{ pokemon.defense }}</div>
-          <div>{{ pokemon.specialAttack }}</div>
-          <div>{{ pokemon.specialDefense }}</div>
-          <div>{{ pokemon.speed }}</div>
-        </div>
-      </div>
-
-      <div class="table-footer">
-        <button @click="setPage(1)" :disabled="page === 1">Pierwszy</button>
-        <button @click="setPage(page - 1)" :disabled="page === 1">Poprzedni</button>
-        {{ page }}
-        <button @click="setPage(page + 1)">Następny</button>
-        <button @click="setPage(2)">Ostatni</button>
-      </div>
-    </div>
+    <Table :columns="table.columns" :rows="table.rows.value" :page="table.page.value" :set-page="table.setPage" />
   </main>
 </template>
 
 <script setup lang="ts">
-import PokemonType from '@/components/PokemonType.vue';
-import { ApiClient } from '@/lib/apiClient';
-import { getIdFromUrl, getPokemonDisplayName } from '@/lib/stringHelpers';
-import type { Pokemon } from 'pokenode-ts';
-import { computed, onMounted, ref, watch } from 'vue';
+import Table from '@/components/Table/Table.vue';
+import { useTable } from '@/components/Table/useTable';
+import { PokemonService, type MyPokemon } from '@/lib/PokemonService';
+import { onMounted, ref, watch } from 'vue';
 
-const page = ref(1);
-const pokemons = ref(new Array<Pokemon>());
-const mappedPokemons = computed(() => pokemons.value.map((pokemon) => {
-  const stats = pokemon.stats.reduce((acc, cur) => {
-    acc[cur.stat.name] = cur.base_stat;
-    return acc;
-  }, {} as Record<string, number>);
-
-  return {
-    ...pokemon,
-    name: getPokemonDisplayName(pokemon.name),
-    totalStats: pokemon.stats.reduce((acc, cur) => acc + cur.base_stat, 0),
-    hp: stats.hp ?? -1,
-    attack: stats.attack ?? -1,
-    defense: stats.defense ?? -1,
-    specialAttack: stats['special-attack'] ?? -1,
-    specialDefense: stats['special-defense'] ?? -1,
-    speed: stats.speed ?? -1,
+const pokemons = ref(new Array<MyPokemon>());
+const table = useTable({
+  values: pokemons,
+  columns: [
+    { name: 'id', label: 'No', width: '5%', map: (p) => p.id },
+    {
+      name: 'sprite', label: 'Sprite', width: '5%', nonsortable: true, map: (p) => ({
+        type: 'img', value:
+          p.sprites.front_default ?? ""
+      })
+    },
+    { name: 'name', label: 'Name', width: '10%', map: (p) => p.displayName },
+    { name: 'types', label: 'Types', width: '10%', map: (p) => ({ type: 'pokemon-types', value: p.myTypes }) },
+    { name: 'totalStats', label: 'Total stats', width: '10%', map: (p) => p.totalStats },
+    { name: 'hp', label: 'Health', width: '10%', map: (p) => p.hp },
+    { name: 'attack', label: 'Attack', width: '10%', map: (p) => p.attack },
+    { name: 'defense', label: 'Defense', width: '10%', map: (p) => p.defense },
+    { name: 'special-attack', label: 'Sp. Attack', width: '10%', map: (p) => p.specialAttack },
+    { name: 'special-defense', label: 'Sp. Defense', width: '10%', map: (p) => p.specialDefense },
+    { name: 'speed', label: 'Speed', width: '10%', map: (p) => p.speed },
+  ],
+  mapToRowMetadata: (value) => {
+    return {
+      id: value.id
+    }
   }
-}));
+})
 
-const setPage = (newPage: number) => {
-  if (newPage < 1) {
-    return;
-  }
-
-  page.value = newPage;
-}
 
 const getPokemon = async (page: number) => {
-  const promises = Array.from({ length: 15 }).map((_, index, array) =>
-    ApiClient.pokemon.getPokemonById(1 + index + (page - 1) * array.length))
-  const result = await Promise.all(promises)
+  const promises = Array.from({ length: 15 }).map((_, index, array) => {
+    const pokemonId = 1 + index + (page - 1) * array.length;
+    return PokemonService.getPokemonById(pokemonId);
+  });
 
-  return result;
+  return await Promise.all(promises)
 }
 
 onMounted(async () => {
-  pokemons.value = await getPokemon(page.value);
+  pokemons.value = await getPokemon(table.page.value);
 });
 
-watch(page, async (newPage) => {
+watch(table.page, async (newPage) => {
   pokemons.value = await getPokemon(newPage);
+  console.log(newPage, table, pokemons.value)
 })
 </script>
 
