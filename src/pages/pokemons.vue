@@ -11,8 +11,7 @@ import { PokemonService, type MyPokemon } from '@/lib/PokemonService';
 import { onMounted, ref, watch } from 'vue';
 
 const pokemons = ref(new Array<MyPokemon>());
-const table = useTable({
-  values: pokemons,
+const table = useTable(pokemons, {
   columns: [
     { name: 'id', label: 'No', width: '5%', map: (p) => p.id },
     {

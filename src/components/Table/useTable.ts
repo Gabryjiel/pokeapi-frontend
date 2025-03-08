@@ -24,14 +24,16 @@ export type TableRow = {
   metadata: RowMetadata;
 };
 
-export function useTable<T>(config: {
-  columns: TableColumn<T>[];
-  mapToRowMetadata: (value: T, index: number, array: T[]) => RowMetadata;
-  values: Ref<T[]>;
-}) {
+export function useTable<T>(
+  values: Ref<T[]>,
+  config: {
+    columns: TableColumn<T>[];
+    mapToRowMetadata: (value: T, index: number, array: T[]) => RowMetadata;
+  },
+) {
   const page = ref(1);
   const rows = computed(() => {
-    return config.values.value.map((val, index, array) => {
+    return values.value.map((val, index, array) => {
       const cells = config.columns.map((column) => column.map(val, index, array));
       const metadata = config.mapToRowMetadata(val, index, array);
 
