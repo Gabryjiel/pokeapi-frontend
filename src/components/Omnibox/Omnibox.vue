@@ -69,7 +69,7 @@ provide('omnibox-content', omniboxContent)
     <div class="keys" v-if="!isOmniboxFocused">
       Ctrl+K
     </div>
-    <input type="text" placeholder="Search anything" :value="omniboxContent" @input="handleOmniboxChange"
+    <input type="text" placeholder="Search" :value="omniboxContent" @input="handleOmniboxChange"
       @focus="isOmniboxFocused = true" @blur="isOmniboxFocused = false" ref="omnibox-input" />
     <ul id="suggestions" v-if="suggestionCount > 0">
       <OmniboxSuggestionGroup href="/pokemons" text="Pokemons" :isVisible="suggestionGroups.pokemons.length > 0">
@@ -87,7 +87,7 @@ provide('omnibox-content', omniboxContent)
 
 <style scoped>
 #omnibox {
-  width: 400px;
+  width: 100%;
   height: 48px;
   position: relative;
 
