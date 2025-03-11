@@ -1,5 +1,5 @@
 <template>
-  <aside>
+  <nav>
     <RouterLink to="/">
       <div class="header">
         <span>Homepage</span>
@@ -23,7 +23,7 @@
       <SidebarElement label="Natures" href="/natures" />
       <SidebarElement label="Types" href="/types" />
     </SidebarGroup>
-  </aside>
+  </nav>
 </template>
 
 <script setup lang="ts">
@@ -42,7 +42,7 @@ a {
   }
 }
 
-aside {
+nav {
   height: 100%;
   width: 200px;
   display: flex;
