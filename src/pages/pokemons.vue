@@ -1,27 +1,57 @@
 <template>
   <main>
-    <Table :columns="table.columns" :rows="table.rows.value" :page="table.page.value" :set-page="table.setPage" />
+    <Table
+      :columns="table.columns"
+      :rows="table.rows.value"
+      :page="tableParams.page.value"
+      :set-page="tableParams.setPage"
+      :hiddenColumns="table.hiddenColumns.value"
+    />
   </main>
 </template>
 
 <script setup lang="ts">
 import Table from '@/components/Table/Table.vue';
 import { useTable } from '@/components/Table/useTable';
-import { PokemonService, type MyPokemon } from '@/lib/PokemonService';
-import { onMounted, ref, watch } from 'vue';
+import { getIdFromUrl, getPokemonDisplayName } from '@/lib/stringHelpers';
+import { usePokemons } from '@/lib/usePokemon';
+import { useTableParams } from '@/lib/useTableParams';
 
-const pokemons = ref(new Array<MyPokemon>());
-const table = useTable(pokemons, {
+const tableParams = useTableParams();
+const pokemons = usePokemons({ page: tableParams.page });
+const table = useTable(pokemons.state, {
+  id: 'pokemons-table',
   columns: [
     { name: 'id', label: 'No', width: '5%', map: (p) => p.id },
     {
-      name: 'sprite', label: 'Sprite', width: '5%', nonsortable: true, map: (p) => ({
-        type: 'img', value:
-          p.sprites.front_default ?? ""
-      })
+      name: 'sprite',
+      label: 'Sprite',
+      width: '5%',
+      nonsortable: true,
+      map: (p) => ({
+        type: 'img',
+        value: p.sprites.front_default ?? '',
+      }),
     },
-    { name: 'name', label: 'Name', width: '10%', map: (p) => p.displayName },
+    {
+      name: 'name',
+      label: 'Name',
+      width: '10%',
+      map: (p) => ({ type: 'link', value: { label: getPokemonDisplayName(p.name), href: `/pokemons/${p.id}` } }),
+    },
     { name: 'types', label: 'Types', width: '10%', map: (p) => ({ type: 'pokemon-types', value: p.myTypes }) },
+    {
+      name: 'abilities',
+      label: 'Abilities',
+      width: '15%',
+      map: (p) => ({
+        type: 'links',
+        value: p.abilities.map((a) => ({
+          href: `/abilities/${getIdFromUrl(a.ability.url)}`,
+          label: getPokemonDisplayName(a.ability.name),
+        })),
+      }),
+    },
     { name: 'totalStats', label: 'Total stats', width: '10%', map: (p) => p.totalStats },
     { name: 'hp', label: 'Health', width: '10%', map: (p) => p.hp },
     { name: 'attack', label: 'Attack', width: '10%', map: (p) => p.attack },
@@ -32,29 +62,10 @@ const table = useTable(pokemons, {
   ],
   mapToRowMetadata: (value) => {
     return {
-      id: value.id
-    }
-  }
-})
-
-
-const getPokemon = async (page: number) => {
-  const promises = Array.from({ length: 15 }).map((_, index, array) => {
-    const pokemonId = 1 + index + (page - 1) * array.length;
-    return PokemonService.getPokemonById(pokemonId);
-  });
-
-  return await Promise.all(promises)
-}
-
-onMounted(async () => {
-  pokemons.value = await getPokemon(table.page.value);
+      id: value.id,
+    };
+  },
 });
-
-watch(table.page, async (newPage) => {
-  pokemons.value = await getPokemon(newPage);
-  console.log(newPage, table, pokemons.value)
-})
 </script>
 
 <style scoped>
@@ -65,7 +76,7 @@ main {
   justify-content: start;
   align-items: center;
   padding: 2rem;
-  overflow: hidden
+  overflow: hidden;
 }
 
 .table {
