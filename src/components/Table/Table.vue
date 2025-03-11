@@ -1,20 +1,31 @@
 <template>
   <div class="table">
     <div class="table-header table-row">
-      <div v-for="column in props.columns" :key="column.name" :class="{
-        cell: true,
-        nonsortable: column.nonsortable
-      }" :style="{ width: column.width ?? '100%' }">
+      <div
+        v-for="column in props.columns.filter((column) => !props.hiddenColumns.includes(column.name))"
+        :key="column.name"
+        :class="{
+          cell: true,
+          nonsortable: column.nonsortable,
+        }"
+        :style="{ width: column.width ?? '100%' }"
+      >
         {{ column.label }}
       </div>
     </div>
 
     <div class="table-body">
       <div class="table-row" v-for="row in props.rows" :key="row.metadata.id">
-        <div v-for="(cell, index) in row.cells" :key="`${row.metadata.id}:${cell}`" :class="{
-          cell: true,
-          ['types-cell']: typeof cell === 'object' && cell.type === 'pokemon-types'
-        }" :style="{ width: props.columns[index].width ?? '100%' }">
+        <div
+          v-for="(cell, index) in row.cells"
+          :key="`${row.metadata.id}:${cell}`"
+          :class="{
+            cell: true,
+            ['types-cell']: typeof cell === 'object' && cell.type === 'pokemon-types',
+            linksCell: typeof cell === 'object' && cell.type === 'links',
+          }"
+          :style="{ width: props.columns[index].width ?? '100%' }"
+        >
           <template v-if="typeof cell === 'string' || typeof cell === 'number'">
             {{ cell }}
           </template>
@@ -25,8 +36,25 @@
             </template>
 
             <template v-else-if="cell.type === 'pokemon-types'">
-              <PokemonType class="types-cell" :key="type.name" v-for="type in cell.value" :type="type.name"
-                :type-no="type.id" />
+              <PokemonType
+                class="types-cell"
+                v-for="type in cell.value"
+                :key="type.name"
+                :type="type.name"
+                :type-no="type.id"
+              />
+            </template>
+
+            <template v-else-if="cell.type === 'link'">
+              <RouterLink :to="cell.value.href">
+                {{ cell.value.label }}
+              </RouterLink>
+            </template>
+
+            <template v-else-if="cell.type === 'links'">
+              <RouterLink v-for="link in cell.value" :key="link.href" :to="link.href">
+                {{ link.label }}
+              </RouterLink>
             </template>
           </template>
 
@@ -51,15 +79,14 @@
 import PokemonType from '../PokemonType.vue';
 import type { TableColumn, TableRow } from './useTable';
 
-
 const props = defineProps<{
+  hiddenColumns: string[];
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  columns: TableColumn<any>[]
+  columns: TableColumn<any>[];
   rows: TableRow[];
   page: number;
   setPage: (newPage: number) => void;
 }>();
-
 </script>
 
 <style scoped>
@@ -93,6 +120,10 @@ const props = defineProps<{
   gap: 1rem;
 }
 
+a {
+  text-decoration: none;
+}
+
 .table-row {
   display: flex;
   justify-content: space-evenly;
@@ -113,6 +144,12 @@ const props = defineProps<{
     display: flex;
     flex-direction: column;
     gap: 1px;
+  }
+
+  .linksCell {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
   }
 
   .sortable {
