@@ -6,6 +6,9 @@
       :page="tableParams.page.value"
       :set-page="tableParams.setPage"
       :hiddenColumns="table.hiddenColumns.value"
+      :set-order-by="tableParams.changeOrder"
+      :order-by="tableParams.orderBy.value"
+      :order-type="tableParams.orderType.value"
     />
   </main>
 </template>
@@ -39,11 +42,18 @@ const table = useTable(pokemons.state, {
       width: '10%',
       map: (p) => ({ type: 'link', value: { label: getPokemonDisplayName(p.name), href: `/pokemons/${p.id}` } }),
     },
-    { name: 'types', label: 'Types', width: '10%', map: (p) => ({ type: 'pokemon-types', value: p.myTypes }) },
+    {
+      name: 'types',
+      label: 'Types',
+      width: '10%',
+      nonsortable: true,
+      map: (p) => ({ type: 'pokemon-types', value: p.myTypes }),
+    },
     {
       name: 'abilities',
       label: 'Abilities',
       width: '15%',
+      nonsortable: true,
       map: (p) => ({
         type: 'links',
         value: p.abilities.map((a) => ({

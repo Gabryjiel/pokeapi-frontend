@@ -23,6 +23,7 @@ export function useTableParams() {
         orderType.value = 'desc';
       } else {
         orderType.value = '';
+        orderBy.value = '';
       }
     } else {
       orderBy.value = newOrderBy;

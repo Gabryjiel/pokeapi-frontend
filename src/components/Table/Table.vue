@@ -6,11 +6,23 @@
         :key="column.name"
         :class="{
           cell: true,
-          nonsortable: column.nonsortable,
+          sortable: !column.nonsortable,
+          ordered: props.orderBy === column.name,
         }"
         :style="{ width: column.width ?? '100%' }"
+        @click="onHeaderClick(column)"
       >
-        {{ column.label }}
+        <div style="position: relative">
+          {{ column.label }}
+          <div
+            v-if="props.orderBy === column.name"
+            :class="{
+              orderArrow: true,
+              asc: props.orderType === 'asc',
+              desc: props.orderType === 'desc',
+            }"
+          ></div>
+        </div>
       </div>
     </div>
 
@@ -76,6 +88,7 @@
 </template>
 
 <script setup lang="ts">
+import type { OrderType } from '@/lib/useTableParams';
 import PokemonType from '../PokemonType.vue';
 import type { TableColumn, TableRow } from './useTable';
 
@@ -86,7 +99,18 @@ const props = defineProps<{
   rows: TableRow[];
   page: number;
   setPage: (newPage: number) => void;
+  setOrderBy: (columnName: string) => void;
+  orderBy: string;
+  orderType: OrderType;
 }>();
+
+const onHeaderClick = (column: TableColumn<unknown>) => {
+  if (column.nonsortable) {
+    return;
+  }
+
+  props.setOrderBy(column.name);
+};
 </script>
 
 <style scoped>
@@ -153,9 +177,29 @@ a {
   }
 
   .sortable {
+    user-select: none;
+    position: relative;
     &:hover {
       color: slateblue;
       cursor: pointer;
+    }
+
+    &.ordered {
+      color: gray;
+    }
+
+    .orderArrow {
+      position: absolute;
+      right: -10px;
+
+      &.desc::after {
+        content: '^';
+        transform: rotate(180deg);
+      }
+
+      &.asc::after {
+        content: '^';
+      }
     }
   }
 }
