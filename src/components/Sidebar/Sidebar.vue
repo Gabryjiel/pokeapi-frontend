@@ -18,6 +18,10 @@
     <SidebarGroup header-text="Resources">
       <SidebarElement label="Pokemons" href="/pokemons" />
       <SidebarElement label="Abilities" href="/abilities" />
+      <SidebarElement label="Moves" href="/moves" />
+      <SidebarElement label="Items" href="/items" />
+      <SidebarElement label="Natures" href="/natures" />
+      <SidebarElement label="Types" href="/types" />
     </SidebarGroup>
   </aside>
 </template>
@@ -26,8 +30,6 @@
 import Omnibox from '../Omnibox/Omnibox.vue';
 import SidebarElement from './SidebarElement.vue';
 import SidebarGroup from './SidebarGroup.vue';
-
-
 </script>
 
 <style scoped>
