@@ -1,6 +1,6 @@
 <template>
   <div class="table">
-    <div class="table-header table-row">
+    <div class="table-header">
       <div
         v-for="column in props.columns.filter((column) => !props.hiddenColumns.includes(column.name))"
         :key="column.name"
@@ -132,6 +132,9 @@ const onHeaderClick = (column: TableColumn<unknown>) => {
 
 .table-body {
   height: 90%;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
 }
 
 .table-footer {
@@ -148,11 +151,19 @@ a {
   text-decoration: none;
 }
 
+.table-header,
 .table-row {
   display: flex;
   justify-content: space-evenly;
-  height: 3rem;
+  min-height: 3rem;
+  align-items: center;
 
+  div {
+    text-align: center;
+  }
+}
+
+.table-row {
   div {
     display: flex;
     justify-content: center;

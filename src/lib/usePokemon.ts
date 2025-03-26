@@ -31,3 +31,22 @@ export function usePokemons(filters: { page: Ref<number> }) {
 
   return pokemonsRef;
 }
+
+async function getAbilities(page: number) {
+  const promises = Array.from({ length: 15 }).map((_, index, array) => {
+    const id = 1 + index + (page - 1) * array.length;
+    return PokemonService.getAbilityById(id);
+  });
+
+  return Promise.all(promises);
+}
+
+export function useAbilities(filters: { page: Ref<number> }) {
+  const dataRef = useAsyncState(getAbilities(filters.page.value), []);
+
+  watch(filters.page, async (newPage) => {
+    dataRef.state.value = await getAbilities(newPage);
+  });
+
+  return dataRef;
+}

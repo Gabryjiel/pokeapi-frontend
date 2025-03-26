@@ -1,5 +1,5 @@
 <template>
-  <main>
+  <TableLayout>
     <Table
       :columns="table.columns"
       :rows="table.rows.value"
@@ -10,16 +10,34 @@
       :order-by="tableParams.orderBy.value"
       :order-type="tableParams.orderType.value"
     />
-  </main>
+
+    <template v-slot:aside>
+      <DoubleRangeInput
+        :min="150"
+        :max="1200"
+        :lower-value="params.minTotalStats.value"
+        :higher-value="params.maxTotalStats.value"
+        @change:min="params.minTotalStats.value = $event"
+        @change:max="params.maxTotalStats.value = $event"
+      />
+    </template>
+  </TableLayout>
 </template>
 
 <script setup lang="ts">
+import DoubleRangeInput from '@/components/DoubleRangeInput.vue';
+import TableLayout from '@/components/TableLayout.vue';
 import Table from '@/components/Table/Table.vue';
 import { useTable } from '@/components/Table/useTable';
 import { getIdFromUrl, getPokemonDisplayName } from '@/lib/stringHelpers';
 import { usePokemons } from '@/lib/usePokemon';
 import { useTableParams } from '@/lib/useTableParams';
+import { useRouteQuery } from '@vueuse/router';
 
+const params = {
+  minTotalStats: useRouteQuery('min-total', '', { transform: Number, mode: 'replace' }),
+  maxTotalStats: useRouteQuery('max-total', '', { transform: Number, mode: 'replace' }),
+};
 const tableParams = useTableParams();
 const pokemons = usePokemons({ page: tableParams.page });
 const table = useTable(pokemons.state, {
@@ -78,79 +96,4 @@ const table = useTable(pokemons.state, {
 });
 </script>
 
-<style scoped>
-main {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: start;
-  align-items: center;
-  padding: 2rem;
-  overflow: hidden;
-}
-
-.table {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  border: 3px solid black;
-  border-radius: 10px;
-  overflow: hidden;
-  background-color: whitesmoke;
-}
-
-.table-header {
-  height: 5%;
-  font-weight: bold;
-  border-bottom: 1px solid black;
-}
-
-.table-body {
-  height: 90%;
-}
-
-.table-footer {
-  height: 5%;
-  border-top: 1px solid black;
-  padding: 1rem;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  gap: 1rem;
-}
-
-.table-row {
-  display: flex;
-  justify-content: space-evenly;
-  height: 3rem;
-
-  div {
-    flex: 1 0 0;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-
-    img {
-      height: 100%;
-    }
-  }
-
-  .types-cell {
-    display: flex;
-    flex-direction: column;
-    gap: 1px;
-  }
-
-  .sortable {
-    &:hover {
-      color: slateblue;
-      cursor: pointer;
-    }
-  }
-}
-
-.table-row:nth-of-type(even) {
-  background-color: lightgrey;
-}
-</style>
+<style scoped></style>

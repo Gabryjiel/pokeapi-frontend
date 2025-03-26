@@ -1,4 +1,4 @@
-import type { Pokemon } from 'pokenode-ts';
+import type { Ability, Pokemon } from 'pokenode-ts';
 import { FetchService } from './FetchService';
 import { getIdFromUrl, getPokemonDisplayName } from './stringHelpers';
 
@@ -23,6 +23,12 @@ export const PokemonService = {
     });
 
     return pokemon;
+  },
+
+  getAbilityById: async (id: number) => {
+    const data = await FetchService.withCache<Ability>(`https://pokeapi.co/api/v2/ability/${id}`);
+
+    return data;
   },
 };
 
