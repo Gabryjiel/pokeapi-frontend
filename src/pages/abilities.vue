@@ -1,80 +1,66 @@
 <template>
-  <table>
-    <thead>
-      <tr v-for="headerGroup in table.getHeaderGroups()" :key="headerGroup.id">
-        <th
-          v-for="header in headerGroup.headers"
-          :key="header.id"
-          :id="header.id"
-          @click="table.setSorting(sorter(header))"
-        >
-          <FlexRender :render="header.column.columnDef.header" :props="header.getContext()" />
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      <tr v-for="row in table.getRowModel().rows" :key="row.id">
-        <td v-for="cell in row.getVisibleCells()" :key="cell.id">
-          <FlexRender :render="cell.column.columnDef.cell" :props="cell.getContext()" />
-        </td>
-      </tr>
-    </tbody>
-  </table>
+  <VueTable :table="table" :is-loading="abilities.isLoading.value" />
 </template>
 
 <script setup lang="ts">
-import { useAbilities } from '@/lib/usePokemon';
-import { useTableParams } from '@/lib/useTableParams';
+import VueTable from '@/components/Table/VueTable.vue';
+import { useCache } from '@/lib/CacheService';
+import { PokeApiService } from '@/lib/PokeApiService';
+import { getPokemonDisplayName } from '@/lib/stringHelpers';
 import {
   createColumnHelper,
-  FlexRender,
   getCoreRowModel,
+  getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   useVueTable,
-  type Header,
-  type SortingState,
 } from '@tanstack/vue-table';
 import type { Ability } from 'pokenode-ts';
+import { h } from 'vue';
 
 const columnHelper = createColumnHelper<Ability>();
-
-const sorter = (header: Header<Ability, unknown>) => (prev: SortingState) => {
-  const start = prev.at(0);
-
-  if (start === undefined || start.id !== header.id) {
-    return [{ id: header.id, desc: false }];
-  } else if (start.desc) {
-    return [];
-  } else {
-    return [{ id: header.id, desc: true }];
-  }
-};
-
-const tableParams = useTableParams();
-const abilities = useAbilities({ page: tableParams.page });
+const abilities = useCache('abilities', {}, PokeApiService.getAllAbilities, []);
 const table = useVueTable({
   data: abilities.state,
   columns: [
     columnHelper.accessor('name', {
       id: 'abilityName',
       header: 'Name',
-      //cell: (cell) => cell.row.original.names.find((n) => n.language.name === 'en')?.name ?? cell.getValue(),
-      cell: () => 'div',
-    }),
-    columnHelper.accessor('flavor_text_entries.flavor_text', {
-      id: 'abilityDescription',
-      header: 'Short description',
-      cell: (cell) =>
-        cell.row.original.flavor_text_entries.find((fte) => fte.language.name === 'en')?.flavor_text ?? '-',
+      enableSorting: true,
+      cell: (cell) => {
+        return h('a', {
+          href: `/abilities/${cell.row.original.id}`,
+          innerText: getPokemonDisplayName(cell.getValue()),
+        });
+      },
+      size: 150,
     }),
     {
       id: 'pokemonCount',
       header: 'Number of Pokemon',
       accessorFn: (ability) => ability.pokemon.length,
+      enableSorting: true,
+      size: 200,
+      meta: {
+        textCenter: true,
+      },
     },
+    columnHelper.accessor('flavor_text_entries.flavor_text', {
+      id: 'abilityDescription',
+      header: 'Short description',
+      enableSorting: false,
+      cell: (cell) =>
+        cell.row.original.flavor_text_entries.find((fte) => fte.language.name === 'en')?.flavor_text ?? '-',
+      meta: {
+        flex1: true,
+      },
+    }),
   ],
-  getCoreRowModel: getCoreRowModel(),
-  getSortedRowModel: getSortedRowModel(),
+  getCoreRowModel: getCoreRowModel<Ability>(),
+  getSortedRowModel: getSortedRowModel<Ability>(),
+  getPaginationRowModel: getPaginationRowModel<Ability>(),
+  getFilteredRowModel: getFilteredRowModel<Ability>(),
+  globalFilterFn: 'includesString',
   enableSorting: true,
   initialState: {
     sorting: [
@@ -83,8 +69,42 @@ const table = useVueTable({
         desc: true,
       },
     ],
+    pagination: {
+      pageSize: 30,
+    },
+    globalFilter: '',
   },
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.table-container {
+  width: 100%;
+  height: 100%;
+  padding: 10px;
+}
+
+table {
+  background-color: bisque;
+  width: 100%;
+  height: 100%;
+  border: 5px solid black;
+}
+
+thead {
+  height: 50px;
+  font-weight: bolder;
+}
+
+tbody {
+  text-indent: 10px;
+}
+
+tr {
+  height: 10px;
+}
+
+td {
+  text-align: center;
+}
+</style>

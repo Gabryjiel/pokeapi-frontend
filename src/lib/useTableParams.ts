@@ -1,40 +1,48 @@
 import { useRouteQuery } from '@vueuse/router';
+import { reactive } from 'vue';
 
 export type OrderType = '' | 'asc' | 'desc';
 
+export type TableParams = {
+  page?: number;
+  take?: number;
+  orderBy?: string;
+  orderType?: OrderType;
+};
+
 export function useTableParams() {
-  const page = useRouteQuery('page', 1, { mode: 'replace', transform: Number });
-  const orderBy = useRouteQuery('orderBy', '' as string, { mode: 'replace' });
-  const orderType = useRouteQuery('orderType', '' as OrderType, { mode: 'replace' });
+  const params = reactive({
+    page: useRouteQuery('page', 1, { mode: 'replace', transform: Number }),
+    orderBy: useRouteQuery('orderBy', '' as string, { mode: 'replace' }),
+    orderType: useRouteQuery('orderType', '' as OrderType, { mode: 'replace' }),
+  });
 
   const setPage = (newPage: number) => {
     if (newPage < 1) {
       return;
     }
 
-    page.value = newPage;
+    params.page = newPage;
   };
 
   const changeOrder = (newOrderBy: string) => {
-    if (orderBy.value === newOrderBy) {
-      if (orderType.value === '') {
-        orderType.value = 'asc';
-      } else if (orderType.value === 'asc') {
-        orderType.value = 'desc';
+    if (params.orderBy === newOrderBy) {
+      if (params.orderType === '') {
+        params.orderType = 'asc';
+      } else if (params.orderType === 'asc') {
+        params.orderType = 'desc';
       } else {
-        orderType.value = '';
-        orderBy.value = '';
+        params.orderType = '';
+        params.orderBy = '';
       }
     } else {
-      orderBy.value = newOrderBy;
-      orderType.value = 'asc';
+      params.orderBy = newOrderBy;
+      params.orderType = 'asc';
     }
   };
 
   return {
-    page,
-    orderBy,
-    orderType,
+    params,
     setPage,
     changeOrder,
   };

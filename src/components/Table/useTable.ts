@@ -1,4 +1,4 @@
-import type { MyPokemonType } from '@/lib/PokemonService';
+import type { MyPokemonType } from '@/lib/PokeApiService';
 import { useLocalStorage } from '@/lib/useLocalStorage';
 import { computed, type Ref } from 'vue';
 

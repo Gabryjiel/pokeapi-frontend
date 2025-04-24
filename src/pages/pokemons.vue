@@ -3,43 +3,66 @@
     <Table
       :columns="table.columns"
       :rows="table.rows.value"
-      :page="tableParams.page.value"
+      :page="params.page"
       :set-page="tableParams.setPage"
       :hiddenColumns="table.hiddenColumns.value"
       :set-order-by="tableParams.changeOrder"
-      :order-by="tableParams.orderBy.value"
-      :order-type="tableParams.orderType.value"
+      :order-by="params.orderBy"
+      :order-type="params.orderType"
     />
 
     <template v-slot:aside>
-      <DoubleRangeInput
-        :min="150"
-        :max="1200"
-        :lower-value="params.minTotalStats.value"
-        :higher-value="params.maxTotalStats.value"
-        @change:min="params.minTotalStats.value = $event"
-        @change:max="params.maxTotalStats.value = $event"
-      />
+      <label for="search">Search</label>
+      <input id="search" type="search" v-model="params.search" />
+
+      <select multiple v-model="params.type">
+        <option v-for="type in types.state.value" :key="type.id" :value="type.name">{{ capitalize(type.name) }}</option>
+      </select>
+
+      <select v-model="params.generation">
+        <option value="">-</option>
+        <option v-for="generation in generations.state.value" :key="generation.id" :value="generation.id">
+          {{ capitalize(generation.name) }}
+        </option>
+      </select>
+
+      <select v-model="params.version">
+        <option value="">-</option>
+        <option v-for="version in versions.state.value" :key="version.id" :value="version.id">
+          {{ capitalize(version.name) }}
+        </option>
+      </select>
     </template>
   </TableLayout>
 </template>
 
 <script setup lang="ts">
-import DoubleRangeInput from '@/components/DoubleRangeInput.vue';
 import TableLayout from '@/components/TableLayout.vue';
 import Table from '@/components/Table/Table.vue';
 import { useTable } from '@/components/Table/useTable';
-import { getIdFromUrl, getPokemonDisplayName } from '@/lib/stringHelpers';
-import { usePokemons } from '@/lib/usePokemon';
+import { capitalize, getIdFromUrl, getPokemonDisplayName } from '@/lib/stringHelpers';
+import { usePokemons } from '@/lib/usePokemons';
 import { useTableParams } from '@/lib/useTableParams';
 import { useRouteQuery } from '@vueuse/router';
+import { reactive } from 'vue';
+import { toRefs, useAsyncState } from '@vueuse/core';
+import { PokeApiService } from '@/lib/PokeApiService';
 
-const params = {
+const tableParams = useTableParams();
+const params = reactive({
+  ...toRefs(tableParams.params),
   minTotalStats: useRouteQuery('min-total', '', { transform: Number, mode: 'replace' }),
   maxTotalStats: useRouteQuery('max-total', '', { transform: Number, mode: 'replace' }),
-};
-const tableParams = useTableParams();
-const pokemons = usePokemons({ page: tableParams.page });
+  search: useRouteQuery('search', '' as string, { mode: 'replace' }),
+  type: useRouteQuery('type', new Array<string>(), { mode: 'replace' }),
+  generation: useRouteQuery('generation', '', { transform: Number, mode: 'replace' }),
+  version: useRouteQuery('version', '', { transform: Number, mode: 'replace' }),
+});
+
+const types = useAsyncState(PokeApiService.getAllTypes, []);
+const generations = useAsyncState(PokeApiService.getAllGenerations, []);
+const versions = useAsyncState(PokeApiService.getAllVersions, []);
+const pokemons = usePokemons(params);
 const table = useTable(pokemons.state, {
   id: 'pokemons-table',
   columns: [
@@ -81,12 +104,12 @@ const table = useTable(pokemons.state, {
       }),
     },
     { name: 'totalStats', label: 'Total stats', width: '10%', map: (p) => p.totalStats },
-    { name: 'hp', label: 'Health', width: '10%', map: (p) => p.hp },
-    { name: 'attack', label: 'Attack', width: '10%', map: (p) => p.attack },
-    { name: 'defense', label: 'Defense', width: '10%', map: (p) => p.defense },
-    { name: 'special-attack', label: 'Sp. Attack', width: '10%', map: (p) => p.specialAttack },
-    { name: 'special-defense', label: 'Sp. Defense', width: '10%', map: (p) => p.specialDefense },
-    { name: 'speed', label: 'Speed', width: '10%', map: (p) => p.speed },
+    { name: 'stat_hp', label: 'Health', width: '10%', map: (p) => p.hp },
+    { name: 'stat_attack', label: 'Attack', width: '10%', map: (p) => p.attack },
+    { name: 'stat_defense', label: 'Defense', width: '10%', map: (p) => p.defense },
+    { name: 'stat_special-attack', label: 'Sp. Attack', width: '10%', map: (p) => p.specialAttack },
+    { name: 'stat_special-defense', label: 'Sp. Defense', width: '10%', map: (p) => p.specialDefense },
+    { name: 'stat_speed', label: 'Speed', width: '10%', map: (p) => p.speed },
   ],
   mapToRowMetadata: (value) => {
     return {

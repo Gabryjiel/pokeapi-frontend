@@ -27,6 +27,9 @@ aside {
   overflow: hidden;
   background-color: whitesmoke;
   padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
 }
 
 h3 {

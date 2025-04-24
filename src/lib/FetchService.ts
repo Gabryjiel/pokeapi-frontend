@@ -1,22 +1,14 @@
-import { CacheService } from './CacheService';
+import { IDBGet, IDBSet } from './IDBService';
 
-type RequestAddons<T, K> = {
-  map: (json: T) => K;
-};
+export async function fetchWithCache<T = unknown>(url: string, init?: RequestInit): Promise<T> {
+  const cached = await IDBGet<T>(url);
+  if (cached !== undefined) {
+    return cached;
+  }
 
-export const FetchService = {
-  withCache: async <T = unknown, K = T>(url: string, init?: RequestInit & RequestAddons<T, K>): Promise<K> => {
-    const cached = await CacheService.get(url);
+  const response = await fetch(url, init);
+  const json = (await response.json()) as T;
 
-    if (cached !== undefined) {
-      return cached;
-    }
-
-    const response = await fetch(url, init);
-    const json = (await response.json()) as T;
-    const mapped = init?.map(json) ?? (json as unknown as K);
-
-    CacheService.set(url, mapped);
-    return mapped;
-  },
-};
+  IDBSet(url, json);
+  return json;
+}
