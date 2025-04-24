@@ -12,7 +12,7 @@
 
     <SidebarGroup header-text="Builder">
       <SidebarElement label="Pokemon Builder" href="/builder/pokemons" />
-      <SidebarElement label="Team Builder" href="/builder/team" />
+      <SidebarElement label="Team Builder" href="/builder/teams" />
     </SidebarGroup>
 
     <SidebarGroup header-text="Resources">
