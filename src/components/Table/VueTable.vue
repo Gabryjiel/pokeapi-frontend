@@ -123,7 +123,6 @@ const sorter = (header: Header<unknown, unknown>) => (prev: SortingState) => {
   height: 100%;
   overflow: hidden;
   padding: 10px;
-  background-color: lightsteelblue;
 }
 
 .table {
@@ -134,6 +133,7 @@ const sorter = (header: Header<unknown, unknown>) => (prev: SortingState) => {
   flex-direction: column;
   border-radius: 25px;
   overflow: hidden;
+  background-color: lightsteelblue;
 }
 
 .table-header,
