@@ -4,16 +4,16 @@ import type { Ability, Move, Nature, Pokemon } from 'pokenode-ts';
 import { useAsyncState } from '@vueuse/core';
 
 type TableFilters = { take?: number; page?: number; orderBy?: string; orderType?: OrderType; search?: string };
+type WithCount<T> = { data: T[]; count: number };
 
 export type CacheDatabase = {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  allPokemons: [Pokemon[], {}];
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  allAbilities: [Ability[], {}];
+  allPokemons: [Pokemon[], null];
+  allAbilities: [Ability[], null];
+  allMoves: [Move[], null];
   pokemon: [MyPokemon, { id: number }];
   pokemons: [MyPokemon[], TableFilters & { type?: string[]; generation?: number }];
   abilities: [Ability[], TableFilters];
-  moves: [Move[], TableFilters];
+  moves: [WithCount<Move>, TableFilters];
   natures: [Nature[], TableFilters];
 };
 
