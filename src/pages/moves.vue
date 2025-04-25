@@ -1,31 +1,55 @@
 <template>
-  <VueTable :table="table" :is-loading="data.isLoading.value" />
+  <VueTable :table="table" :is-loading="moves.isLoading.value" />
 </template>
 
 <script setup lang="ts">
 import PokemonType from '@/components/PokemonType.vue';
 import VueTable from '@/components/Table/VueTable.vue';
-import { useCache } from '@/lib/CacheService';
-import { PokeApiService } from '@/lib/PokeApiService';
+import { type CacheDatabase } from '@/lib/CacheService';
 import { capitalize, getIdFromUrl, getPokemonDisplayName } from '@/lib/stringHelpers';
-import {
-  getCoreRowModel,
-  getFilteredRowModel,
-  getPaginationRowModel,
-  getSortedRowModel,
-  useVueTable,
-} from '@tanstack/vue-table';
+import { useMoves } from '@/lib/useMoves';
+import { getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import type { Move } from 'pokenode-ts';
-import { h } from 'vue';
+import { computed, h, ref, toRef, watch } from 'vue';
 
-const data = useCache('moves', {}, PokeApiService.moves.getAll, []);
+const sorting = ref([
+  {
+    id: 'id',
+    desc: false,
+  },
+]);
+const pagination = ref({
+  pageIndex: 0,
+  pageSize: 25,
+});
+const search = ref('');
+
+const filters = computed<CacheDatabase['moves'][1]>(() => {
+  const order = sorting.value.at(0);
+
+  return {
+    take: pagination.value.pageSize,
+    orderBy: order ? order.id : undefined,
+    orderType: order ? (order.desc ? 'desc' : 'asc') : '',
+    page: pagination.value.pageIndex + 1,
+    search: search.value,
+  };
+});
+
+const moves = useMoves(filters);
 const table = useVueTable({
-  data: data.state,
+  get data() {
+    return moves.state.value.data;
+  },
+  get rowCount() {
+    return moves.state.value.count;
+  },
   getCoreRowModel: getCoreRowModel<Move>(),
-  getSortedRowModel: getSortedRowModel<Move>(),
-  getPaginationRowModel: getPaginationRowModel<Move>(),
-  getFilteredRowModel: getFilteredRowModel<Move>(),
+  manualFiltering: true,
+  manualSorting: true,
+  manualPagination: true,
   columns: [
+    { id: 'id', accessorKey: 'id' },
     {
       id: 'name',
       header: 'Name',
@@ -61,11 +85,30 @@ const table = useVueTable({
       meta: { flex1: true },
     },
   ],
-  initialState: {
-    pagination: {
-      pageSize: 25,
+  globalFilterFn: 'includesString',
+  state: {
+    get sorting() {
+      return sorting.value;
     },
-    globalFilter: '',
+    get pagination() {
+      return pagination.value;
+    },
+    get globalFilter() {
+      return search.value;
+    },
+    columnVisibility: {
+      id: false,
+    },
+  },
+  onSortingChange: (updater) => {
+    sorting.value = updater instanceof Function ? updater(sorting.value) : updater;
+  },
+  onPaginationChange: (updater) => {
+    pagination.value = updater instanceof Function ? updater(pagination.value) : updater;
+  },
+  onGlobalFilterChange: (updater) => {
+    search.value = updater instanceof Function ? updater(search.value) : updater;
+    pagination.value.pageIndex = 0;
   },
 });
 </script>
