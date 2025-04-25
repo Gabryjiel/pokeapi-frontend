@@ -50,23 +50,17 @@
         <div />
 
         <div class="pagination">
-          <button @click="props.table.firstPage" :disabled="props.table.getState().pagination.pageIndex === 0">
+          <button @click="props.table.firstPage" :disabled="!props.table.getCanPreviousPage()">
             {{ '<<' }}
           </button>
-          <button @click="props.table.previousPage" :disabled="props.table.getState().pagination.pageIndex === 0">
+          <button @click="props.table.previousPage" :disabled="!props.table.getCanPreviousPage()">
             {{ '<' }}
           </button>
-          {{ props.table.getState().pagination.pageIndex + 1 }}
-          <button
-            @click="props.table.nextPage"
-            :disabled="props.table.getState().pagination.pageIndex >= props.table.getPageCount() - 1"
-          >
+          {{ props.table.getState().pagination.pageIndex + 1 }} {{ ' / ' }} {{ props.table.getPageCount() }}
+          <button @click="props.table.nextPage" :disabled="!props.table.getCanNextPage()">
             {{ '>' }}
           </button>
-          <button
-            @click="props.table.lastPage"
-            :disabled="props.table.getState().pagination.pageIndex >= props.table.getPageCount() - 1"
-          >
+          <button @click="() => props.table.lastPage()" :disabled="!props.table.getCanNextPage()">
             {{ '>>' }}
           </button>
         </div>
