@@ -77,34 +77,4 @@ const table = useVueTable({
 });
 </script>
 
-<style scoped>
-.table-container {
-  width: 100%;
-  height: 100%;
-  padding: 10px;
-}
-
-table {
-  background-color: bisque;
-  width: 100%;
-  height: 100%;
-  border: 5px solid black;
-}
-
-thead {
-  height: 50px;
-  font-weight: bolder;
-}
-
-tbody {
-  text-indent: 10px;
-}
-
-tr {
-  height: 10px;
-}
-
-td {
-  text-align: center;
-}
-</style>
+<style scoped></style>
