@@ -27,9 +27,11 @@ declare module 'vue-router/auto-routes' {
     '/builder.teams': RouteRecordInfo<'/builder.teams', '/builder/teams', Record<never, never>, Record<never, never>>,
     '/items': RouteRecordInfo<'/items', '/items', Record<never, never>, Record<never, never>>,
     '/moves': RouteRecordInfo<'/moves', '/moves', Record<never, never>, Record<never, never>>,
+    '/moves.[id]': RouteRecordInfo<'/moves.[id]', '/moves/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/natures': RouteRecordInfo<'/natures', '/natures', Record<never, never>, Record<never, never>>,
     '/pokemons': RouteRecordInfo<'/pokemons', '/pokemons', Record<never, never>, Record<never, never>>,
     '/pokemons.[id]': RouteRecordInfo<'/pokemons.[id]', '/pokemons/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
     '/types': RouteRecordInfo<'/types', '/types', Record<never, never>, Record<never, never>>,
+    '/types.[id]': RouteRecordInfo<'/types.[id]', '/types/:id', { id: ParamValue<true> }, { id: ParamValue<false> }>,
   }
 }
