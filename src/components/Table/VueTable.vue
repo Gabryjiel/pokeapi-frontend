@@ -47,25 +47,29 @@
       </div>
 
       <div v-if="!props.noPagination" class="table-footer">
-        <button @click="props.table.firstPage" :disabled="props.table.getState().pagination.pageIndex === 0">
-          {{ '<<' }}
-        </button>
-        <button @click="props.table.previousPage" :disabled="props.table.getState().pagination.pageIndex === 0">
-          {{ '<' }}
-        </button>
-        {{ props.table.getState().pagination.pageIndex + 1 }}
-        <button
-          @click="props.table.nextPage"
-          :disabled="props.table.getState().pagination.pageIndex >= props.table.getPageCount() - 1"
-        >
-          {{ '>' }}
-        </button>
-        <button
-          @click="props.table.lastPage"
-          :disabled="props.table.getState().pagination.pageIndex >= props.table.getPageCount() - 1"
-        >
-          {{ '>>' }}
-        </button>
+        <div />
+
+        <div class="pagination">
+          <button @click="props.table.firstPage" :disabled="props.table.getState().pagination.pageIndex === 0">
+            {{ '<<' }}
+          </button>
+          <button @click="props.table.previousPage" :disabled="props.table.getState().pagination.pageIndex === 0">
+            {{ '<' }}
+          </button>
+          {{ props.table.getState().pagination.pageIndex + 1 }}
+          <button
+            @click="props.table.nextPage"
+            :disabled="props.table.getState().pagination.pageIndex >= props.table.getPageCount() - 1"
+          >
+            {{ '>' }}
+          </button>
+          <button
+            @click="props.table.lastPage"
+            :disabled="props.table.getState().pagination.pageIndex >= props.table.getPageCount() - 1"
+          >
+            {{ '>>' }}
+          </button>
+        </div>
 
         <input
           type="search"
@@ -210,9 +214,20 @@ const sorter = (header: Header<unknown, unknown>) => (prev: SortingState) => {
   width: 100%;
   height: 50px;
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
-  gap: 5px;
-  padding: 10px;
+  padding-right: 20px;
+
+  .pagination {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    padding: 10px;
+  }
+
+  input {
+    height: 30px;
+  }
 }
 </style>
