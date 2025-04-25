@@ -53,7 +53,7 @@ function createCacheKey<Table extends keyof CacheDatabase>(table: Table, filters
 }
 
 function serializeFilters(filters?: CacheDatabase[keyof CacheDatabase][1]): string {
-  if (filters === undefined) {
+  if (filters == undefined) {
     return '';
   }
 
@@ -94,7 +94,7 @@ export function useCache<TTable extends keyof CacheDatabase>(
     }
 
     const result = await dataGetter(filters);
-    CacheService.set(table, filters, result);
+    CacheService.set(table, result, filters);
     return result;
   };
 
