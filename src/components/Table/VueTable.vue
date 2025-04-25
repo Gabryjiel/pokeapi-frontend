@@ -56,13 +56,13 @@
         {{ props.table.getState().pagination.pageIndex + 1 }}
         <button
           @click="props.table.nextPage"
-          :disabled="props.table.getState().pagination.pageIndex === props.table.getPageCount()"
+          :disabled="props.table.getState().pagination.pageIndex >= props.table.getPageCount() - 1"
         >
           {{ '>' }}
         </button>
         <button
           @click="props.table.lastPage"
-          :disabled="props.table.getState().pagination.pageIndex === props.table.getPageCount()"
+          :disabled="props.table.getState().pagination.pageIndex >= props.table.getPageCount() - 1"
         >
           {{ '>>' }}
         </button>
