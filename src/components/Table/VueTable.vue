@@ -46,7 +46,7 @@
         </div>
       </div>
 
-      <div class="table-footer">
+      <div v-if="!props.noPagination" class="table-footer">
         <button @click="props.table.firstPage" :disabled="props.table.getState().pagination.pageIndex === 0">
           {{ '<<' }}
         </button>
@@ -93,6 +93,7 @@ const props = defineProps<{
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   table: Table<any>;
   isLoading?: boolean;
+  noPagination?: boolean;
 }>();
 
 const sorter = (header: Header<unknown, unknown>) => (prev: SortingState) => {
@@ -182,6 +183,8 @@ const sorter = (header: Header<unknown, unknown>) => (prev: SortingState) => {
 
 .table-body-row-cell {
   text-indent: 5px;
+  display: flex;
+  align-items: center;
 }
 
 .sortable {
@@ -200,7 +203,7 @@ const sorter = (header: Header<unknown, unknown>) => (prev: SortingState) => {
 }
 
 .text-center {
-  text-align: center;
+  justify-content: center;
 }
 
 .table-footer {

@@ -1,4 +1,14 @@
-import type { Ability, Generation, NamedAPIResource, NamedAPIResourceList, Pokemon, Type, Version } from 'pokenode-ts';
+import type {
+  Ability,
+  Generation,
+  Move,
+  NamedAPIResource,
+  NamedAPIResourceList,
+  Nature,
+  Pokemon,
+  Type,
+  Version,
+} from 'pokenode-ts';
 import { getIdFromUrl, getPokemonDisplayName } from './stringHelpers';
 import { fetchWithCache } from './FetchService';
 
@@ -18,7 +28,7 @@ export type MyPokemon = Pokemon & {
 
 export const PokeApiService = {
   getPokemonList: () => getList('pokemon'),
-  getPokemonById: async (id: number) => fetchWithCache<Pokemon>(`https://pokeapi.co/api/v2/pokemon/${id}`),
+  getPokemonById: (id: number) => fetchWithCache<Pokemon>(`https://pokeapi.co/api/v2/pokemon/${id}`),
   getAllPokemons: () => getAll<Pokemon>(PokeApiService.getPokemonList, PokeApiService.getPokemonById),
 
   getAbilityList: () => getList('ability'),
@@ -36,6 +46,18 @@ export const PokeApiService = {
   getVersionList: () => getList('version'),
   getVersionById: (id: number) => fetchWithCache<Version>(`https://pokeapi.co/api/v2/version/${id}`),
   getAllVersions: () => getAll<Version>(PokeApiService.getVersionList, PokeApiService.getVersionById),
+
+  moves: {
+    getList: () => getList('move'),
+    getById: (id: number) => fetchWithCache<Move>(`https://pokeapi.co/api/v2/move/${id}`),
+    getAll: () => getAll<Move>(PokeApiService.moves.getList, PokeApiService.moves.getById),
+  },
+
+  nature: {
+    getList: () => getList('nature'),
+    getById: (id: number) => fetchWithCache<Nature>(`https://pokeapi.co/api/v2/nature/${id}`),
+    getAll: () => getAll<Nature>(PokeApiService.nature.getList, PokeApiService.nature.getById),
+  },
 };
 
 async function getList(resource: string): Promise<NamedAPIResource[]> {

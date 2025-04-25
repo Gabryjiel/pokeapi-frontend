@@ -1,37 +1,41 @@
 <template>
   <router-link :to="`/types/${props.typeNo}`">
-    <div :class="{
-      fire: props.type === 'fire',
-      fighting: props.type === 'fighting',
-      water: props.type === 'water',
-      electric: props.type === 'electric',
-      grass: props.type === 'grass',
-      ice: props.type === 'ice',
-      poison: props.type === 'poison',
-      ground: props.type === 'ground',
-      flying: props.type === 'flying',
-      psychic: props.type === 'psychic',
-      bug: props.type === 'bug',
-      rock: props.type === 'rock',
-      ghost: props.type === 'ghost',
-      dragon: props.type === 'dragon',
-      dark: props.type === 'dark',
-      steel: props.type === 'steel',
-      fairy: props.type === 'fairy',
-      normal: props.type === 'normal',
-    }">
+    <div
+      :class="{
+        fire: props.type === 'fire',
+        fighting: props.type === 'fighting',
+        water: props.type === 'water',
+        electric: props.type === 'electric',
+        grass: props.type === 'grass',
+        ice: props.type === 'ice',
+        poison: props.type === 'poison',
+        ground: props.type === 'ground',
+        flying: props.type === 'flying',
+        psychic: props.type === 'psychic',
+        bug: props.type === 'bug',
+        rock: props.type === 'rock',
+        ghost: props.type === 'ghost',
+        dragon: props.type === 'dragon',
+        dark: props.type === 'dark',
+        steel: props.type === 'steel',
+        fairy: props.type === 'fairy',
+        normal: props.type === 'normal',
+      }"
+    >
       <span>{{ props.type }}</span>
     </div>
   </router-link>
 </template>
 
 <script setup lang="ts">
-const props = defineProps<{ type: string, typeNo: number }>()
+const props = defineProps<{ type: string; typeNo: number }>();
 </script>
 
 <style scoped>
 a {
   text-decoration: none;
+  display: flex;
+  justify-content: center;
 }
 
 div {
@@ -40,13 +44,15 @@ div {
   font-family: monospace;
   font-size: 11px;
   display: flex;
-  justify-content: center;
   align-items: center;
+  justify-content: center;
   text-transform: uppercase;
   color: whitesmoke;
   border-radius: 5px;
   border: 1px solid black;
-  text-shadow: 0px 0px 10px black;
+  text-shadow: 0px 0px 5px black;
+  text-indent: 0px;
+  font-weight: bold;
 
   .normal {
     background-color: rgb(170, 170, 153);
