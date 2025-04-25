@@ -26,7 +26,12 @@ const table = useVueTable({
   getPaginationRowModel: getPaginationRowModel<Move>(),
   getFilteredRowModel: getFilteredRowModel<Move>(),
   columns: [
-    { id: 'name', header: 'Name', accessorFn: (data) => getPokemonDisplayName(data.name) },
+    {
+      id: 'name',
+      header: 'Name',
+      accessorFn: (data) => getPokemonDisplayName(data.name),
+      cell: (data) => h('a', { href: `/move/${data.row.original.id}`, innerText: data.getValue() }),
+    },
     {
       id: 'types',
       header: 'Type',
