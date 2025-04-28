@@ -4,13 +4,14 @@
 
 <script setup lang="ts">
 import PokemonType from '@/components/PokemonType.vue';
+import MoveDamageClass from '@/components/Table/MoveDamageClass.vue';
 import VueTable from '@/components/Table/VueTable.vue';
 import { type CacheDatabase } from '@/lib/CacheService';
-import { capitalize, getIdFromUrl, getPokemonDisplayName } from '@/lib/stringHelpers';
+import { getIdFromUrl, getPokemonDisplayName } from '@/lib/stringHelpers';
 import { useMoves } from '@/lib/useMoves';
 import { getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import type { Move } from 'pokenode-ts';
-import { computed, h, ref, toRef, watch } from 'vue';
+import { computed, h, ref } from 'vue';
 
 const sorting = ref([
   {
@@ -72,7 +73,8 @@ const table = useVueTable({
     {
       id: 'category',
       header: 'Category',
-      accessorFn: (data) => capitalize(data.damage_class?.name),
+      accessorFn: (data) => data.damage_class?.name ?? '',
+      cell: (data) => h(MoveDamageClass, { moveDamageClass: data.getValue() }),
       meta: { textCenter: true },
     },
     { id: 'accuracy', header: 'Accuracy', accessorFn: (data) => data.accuracy ?? '-', meta: { textCenter: true } },
