@@ -34,8 +34,9 @@
           <div
             :class="{
               'table-body-row-cell': true,
-              'text-center': cell.column.columnDef.meta?.textCenter === true,
-              flex1: cell.column.columnDef.meta?.flex1 === true,
+              'text-center': cell.column.columnDef.meta?.textCenter,
+              flex1: cell.column.columnDef.meta?.flex1,
+              bold: cell.column.columnDef.meta?.bold,
             }"
             v-for="cell in row.getVisibleCells()"
             :key="cell.id"
@@ -84,6 +85,7 @@ declare module '@tanstack/vue-table' {
   interface ColumnMeta<TData extends RowData, TValue> {
     flex1?: boolean;
     textCenter?: boolean;
+    bold?: boolean;
   }
 }
 
@@ -202,6 +204,10 @@ const sorter = (header: Header<unknown, unknown>) => (prev: SortingState) => {
 
 .text-center {
   justify-content: center;
+}
+
+.bold {
+  font-weight: bold;
 }
 
 .table-footer {

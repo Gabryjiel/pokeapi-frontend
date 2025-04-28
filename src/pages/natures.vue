@@ -22,6 +22,7 @@ const table = useVueTable({
       meta: {
         textCenter: true,
         flex1: true,
+        bold: true,
       },
     },
     {
