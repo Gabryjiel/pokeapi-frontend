@@ -8,37 +8,35 @@ import OmniboxPokemonSuggestion from './OmniboxPokemonSuggestion.vue';
 type SuggestionMap = {
   pokemons: Suggestion[];
   abilities: Suggestion[];
-}
+};
 
 const isOmniboxFocused = ref(false);
 const omniboxContent = ref('');
-const omniboxInputRef = useTemplateRef<HTMLInputElement>('omnibox-input')
+const omniboxInputRef = useTemplateRef<HTMLInputElement>('omnibox-input');
 const suggestionGroups: SuggestionMap = reactive({
   pokemons: [],
   abilities: [],
 });
 
-const suggestionCount = computed(() =>
-  suggestionGroups.pokemons.length + suggestionGroups.abilities.length
-)
+const suggestionCount = computed(() => suggestionGroups.pokemons.length + suggestionGroups.abilities.length);
 
 const handleOmniboxChange = (event: Event) => {
   const currentTarget = event.currentTarget as HTMLInputElement;
   omniboxContent.value = currentTarget.value;
-}
+};
 
 const handleKeyboardEvent = (event: KeyboardEvent) => {
-  if (event.key === 'k' && event.ctrlKey) {
-    event.preventDefault()
+  if (event.key === 'k' && event.altKey) {
+    event.preventDefault();
     if (document.activeElement === omniboxInputRef.value) {
-      omniboxInputRef.value?.blur()
-      isOmniboxFocused.value = false
+      omniboxInputRef.value?.blur();
+      isOmniboxFocused.value = false;
     } else {
-      omniboxInputRef.value?.focus()
-      isOmniboxFocused.value = true
+      omniboxInputRef.value?.focus();
+      isOmniboxFocused.value = true;
     }
   }
-}
+};
 
 onMounted(() => {
   document.addEventListener('keydown', handleKeyboardEvent);
@@ -46,40 +44,54 @@ onMounted(() => {
 
 onUnmounted(() => {
   document.removeEventListener('keydown', handleKeyboardEvent);
-})
+});
 
 watch(omniboxContent, async (content) => {
   if (content.length === 0) {
-    let key: keyof typeof suggestionGroups
+    let key: keyof typeof suggestionGroups;
     for (key in suggestionGroups) {
       suggestionGroups[key] = [];
     }
-    return
+    return;
   }
 
-  suggestionGroups.pokemons = await searchPokemons(content)
-  suggestionGroups.abilities = await searchAbilities(content)
+  suggestionGroups.pokemons = await searchPokemons(content);
+  suggestionGroups.abilities = await searchAbilities(content);
 });
 
-provide('omnibox-content', omniboxContent)
+provide('omnibox-content', omniboxContent);
 </script>
 
 <template>
   <div id="omnibox">
-    <div class="keys" v-if="!isOmniboxFocused">
-      Ctrl+K
-    </div>
-    <input type="text" placeholder="Search" :value="omniboxContent" @input="handleOmniboxChange"
-      @focus="isOmniboxFocused = true" @blur="isOmniboxFocused = false" ref="omnibox-input" />
+    <div class="keys" v-if="!isOmniboxFocused">Alt+K</div>
+    <input
+      type="text"
+      placeholder="Search"
+      :value="omniboxContent"
+      @input="handleOmniboxChange"
+      @focus="isOmniboxFocused = true"
+      @blur="isOmniboxFocused = false"
+      ref="omnibox-input"
+    />
     <ul id="suggestions" v-if="suggestionCount > 0">
       <OmniboxSuggestionGroup href="/pokemons" text="Pokemons" :isVisible="suggestionGroups.pokemons.length > 0">
-        <OmniboxPokemonSuggestion v-for="suggestion in suggestionGroups.pokemons" :key="suggestion.slug"
-          :content="suggestion.name" :href="`/pokemons/${suggestion.id}`" :pokemon-id="suggestion.id" />
+        <OmniboxPokemonSuggestion
+          v-for="suggestion in suggestionGroups.pokemons"
+          :key="suggestion.slug"
+          :content="suggestion.name"
+          :href="`/pokemons/${suggestion.id}`"
+          :pokemon-id="suggestion.id"
+        />
       </OmniboxSuggestionGroup>
 
       <OmniboxSuggestionGroup href="/abilities" text="Abilities" :isVisible="suggestionGroups.abilities.length > 0">
-        <OmniboxSuggestion v-for="suggestion in suggestionGroups.abilities" :key="suggestion.slug"
-          :content="suggestion.name" :href="`/abilities/${suggestion.id}`" />
+        <OmniboxSuggestion
+          v-for="suggestion in suggestionGroups.abilities"
+          :key="suggestion.slug"
+          :content="suggestion.name"
+          :href="`/abilities/${suggestion.id}`"
+        />
       </OmniboxSuggestionGroup>
     </ul>
   </div>
@@ -105,7 +117,7 @@ provide('omnibox-content', omniboxContent)
 
     &:focus {
       border-color: darkslateblue;
-      outline: none
+      outline: none;
     }
   }
 }
