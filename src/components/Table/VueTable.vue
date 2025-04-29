@@ -37,6 +37,7 @@
               'text-center': cell.column.columnDef.meta?.textCenter,
               flex1: cell.column.columnDef.meta?.flex1,
               bold: cell.column.columnDef.meta?.bold,
+              link: cell.column.columnDef.meta?.link,
             }"
             v-for="cell in row.getVisibleCells()"
             :key="cell.id"
@@ -86,6 +87,7 @@ declare module '@tanstack/vue-table' {
     flex1?: boolean;
     textCenter?: boolean;
     bold?: boolean;
+    link?: boolean;
   }
 }
 
@@ -208,6 +210,20 @@ const sorter = (header: Header<unknown, unknown>) => (prev: SortingState) => {
 
 .bold {
   font-weight: bold;
+}
+
+.link a {
+  text-decoration: none;
+  color: darkslateblue;
+  font-weight: bold;
+
+  &:hover {
+    text-decoration: underline;
+  }
+
+  &:visited {
+    color: gray;
+  }
 }
 
 .table-footer {
