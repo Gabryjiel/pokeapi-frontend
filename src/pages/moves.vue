@@ -1,5 +1,43 @@
 <template>
-  <VueTable :table="table" :is-loading="moves.isLoading.value" />
+  <div class="container">
+    <VueTable :table="table" :is-loading="moves.isLoading.value" />
+
+    <aside>
+      <h1>Filtry</h1>
+
+      <label for="type">Type</label>
+      <select v-model="moveFilters.type">
+        <option value="">-</option>
+        <option value="normal">Normal</option>
+        <option value="fire">Fire</option>
+        <option value="water">Water</option>
+        <option value="electric">Electric</option>
+        <option value="grass">Grass</option>
+        <option value="ice">Ice</option>
+        <option value="fighting">Fighting</option>
+        <option value="poison">Poison</option>
+        <option value="ground">Ground</option>
+        <option value="flying">Flying</option>
+        <option value="psychic">Psychic</option>
+        <option value="bug">Bug</option>
+        <option value="rock">Rock</option>
+        <option value="ghost">Ghost</option>
+        <option value="dragon">Dragon</option>
+        <option value="dark">Dark</option>
+        <option value="steel">Steel</option>
+        <option value="fairy">Fairy</option>
+        <option value="shadow">Shadow</option>
+      </select>
+
+      <label for="category">Category</label>
+      <select v-model="moveFilters.category">
+        <option value="">-</option>
+        <option value="status">Status</option>
+        <option value="physical">Physical</option>
+        <option value="special">Special</option>
+      </select>
+    </aside>
+  </div>
 </template>
 
 <script setup lang="ts">
@@ -11,7 +49,7 @@ import { getIdFromUrl, getPokemonDisplayName } from '@/lib/stringHelpers';
 import { useMoves } from '@/lib/useMoves';
 import { getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import type { Move } from 'pokenode-ts';
-import { computed, h, ref } from 'vue';
+import { computed, h, reactive, ref } from 'vue';
 
 const sorting = ref([
   {
@@ -25,10 +63,17 @@ const pagination = ref({
 });
 const search = ref('');
 
+const moveFilters = reactive({
+  category: undefined,
+  type: undefined,
+});
+
 const filters = computed<CacheDatabase['moves'][1]>(() => {
   const order = sorting.value.at(0);
 
   return {
+    category: moveFilters.category,
+    type: moveFilters.type,
     take: pagination.value.pageSize,
     orderBy: order ? order.id : undefined,
     orderType: order ? (order.desc ? 'desc' : 'asc') : '',
@@ -58,7 +103,7 @@ const table = useVueTable({
       cell: (data) => h('a', { href: `/move/${data.row.original.id}`, innerText: data.getValue() }),
     },
     {
-      id: 'types',
+      id: 'type',
       header: 'Type',
       accessorFn: (data) => data.type.name,
       cell: (data) =>
@@ -115,4 +160,29 @@ const table = useVueTable({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.container {
+  height: 100%;
+  width: 100%;
+  display: flex;
+}
+
+aside {
+  background-color: lightsteelblue;
+  margin: 10px 10px 10px 0;
+  padding: 10px 5px;
+  border-radius: 25px;
+  border: 2px solid black;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+
+  h1 {
+    text-indent: 5px;
+    font-size: large;
+    font-weight: bold;
+    padding-bottom: 10px;
+  }
+}
+</style>

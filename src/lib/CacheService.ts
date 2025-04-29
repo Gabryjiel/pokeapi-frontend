@@ -13,7 +13,7 @@ export type CacheDatabase = {
   pokemon: [MyPokemon, { id: number }];
   pokemons: [MyPokemon[], TableFilters & { type?: string[]; generation?: number }];
   abilities: [Ability[], TableFilters];
-  moves: [WithCount<Move>, TableFilters];
+  moves: [WithCount<Move>, TableFilters & { type?: string; category?: string }];
   natures: [Nature[], TableFilters];
 };
 

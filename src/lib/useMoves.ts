@@ -40,11 +40,15 @@ async function getMoves(filters: Filters) {
   return data;
 }
 
-function filter(data: Move[], filters: Pick<Filters, 'search'>) {
+function filter(data: Move[], filters: Filters) {
   const filtered = new Array<Move>();
 
   for (const item of data) {
     if (filters.search !== undefined && !item.name.includes(filters.search.toLowerCase())) {
+      continue;
+    } else if (filters.type && item.type.name !== filters.type) {
+      continue;
+    } else if (filters.category && item.damage_class?.name !== filters.category) {
       continue;
     }
 
@@ -59,11 +63,20 @@ function order(data: Move[], filters: Pick<Filters, 'orderBy' | 'orderType'>) {
   const higher = filters.orderType === 'desc' ? -1 : 1;
 
   const ordered = data.toSorted((a, b) => {
-    if (filters.orderBy === 'name') {
-      return a.name > b.name ? lower : higher;
+    switch (filters.orderBy) {
+      case 'name':
+        return a.name > b.name ? lower : higher;
+      case 'type':
+        return a.type.name > b.type.name ? lower : higher;
+      case 'category':
+        return (a.damage_class?.name ?? '') > (b.damage_class?.name ?? '') ? lower : higher;
+      case 'accuracy':
+        return (a.accuracy ?? 0) > (b.accuracy ?? 0) ? lower : higher;
+      case 'damage':
+        return (a.power ?? 0) > (b.power ?? 0) ? lower : higher;
+      default:
+        return a.id - b.id;
     }
-
-    return a.id - b.id;
   });
 
   return ordered;
