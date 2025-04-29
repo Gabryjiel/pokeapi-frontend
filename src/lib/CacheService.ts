@@ -1,20 +1,23 @@
 import type { OrderType } from './useTableParams';
 import type { MyPokemon } from './PokeApiService';
-import type { Ability, Move, Nature, Pokemon } from 'pokenode-ts';
+import type { Ability, Move, Nature, Pokemon, Type } from 'pokenode-ts';
 import { useAsyncState } from '@vueuse/core';
 
-type TableFilters = { take?: number; page?: number; orderBy?: string; orderType?: OrderType; search?: string };
+type OrderFilters = { orderBy?: string; orderType?: OrderType };
+type TableFilters = { take?: number; page?: number; search?: string } & OrderFilters;
 type WithCount<T> = { data: T[]; count: number };
 
 export type CacheDatabase = {
   allPokemons: [Pokemon[], null];
   allAbilities: [Ability[], null];
   allMoves: [Move[], null];
+  allTypes: [Type[], null];
   pokemon: [MyPokemon, { id: number }];
   pokemons: [MyPokemon[], TableFilters & { type?: string[]; generation?: number }];
   abilities: [Ability[], TableFilters];
   moves: [WithCount<Move>, TableFilters & { type?: string; category?: string }];
   natures: [Nature[], TableFilters];
+  types: [Type[], OrderFilters & { search?: string }];
 };
 
 const cache = new Map<string, unknown>();
