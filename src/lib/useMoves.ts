@@ -44,7 +44,15 @@ function filter(data: Move[], filters: Filters) {
   const filtered = new Array<Move>();
 
   for (const item of data) {
-    if (filters.search !== undefined && !item.name.includes(filters.search.toLowerCase())) {
+    const data =
+      item.name +
+      item.type.name +
+      (item.damage_class?.name ?? '') +
+      item.accuracy +
+      item.power +
+      item.effect_entries.at(0)?.short_effect;
+
+    if (filters.search !== undefined && !data.includes(filters.search.toLowerCase())) {
       continue;
     } else if (filters.type && item.type.name !== filters.type) {
       continue;
