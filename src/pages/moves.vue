@@ -50,6 +50,7 @@ import { useMoves } from '@/lib/useMoves';
 import { getCoreRowModel, useVueTable } from '@tanstack/vue-table';
 import type { Move } from 'pokenode-ts';
 import { computed, h, reactive, ref } from 'vue';
+import { RouterLink } from 'vue-router';
 
 const sorting = ref([
   {
@@ -100,7 +101,8 @@ const table = useVueTable({
       id: 'name',
       header: 'Name',
       accessorFn: (data) => getPokemonDisplayName(data.name),
-      cell: (data) => h('a', { href: `/move/${data.row.original.id}`, innerText: data.getValue() }),
+      cell: (data) => h(RouterLink, { to: `/move/${data.row.original.id}`, innerText: data.getValue() }),
+      meta: { link: true },
     },
     {
       id: 'type',
